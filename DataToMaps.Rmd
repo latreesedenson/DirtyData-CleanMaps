@@ -4,7 +4,6 @@ author: "LaTreese Denson & Alex Davis"
 date: "06/16/2021"
 output:
   html_document:
-    theme: default 
     toc_float: yes
     toc: yes
     toc_depth: 2
