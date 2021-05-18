@@ -1,8 +1,10 @@
+Pulling from here main readme
+
 This repository holds the materials for the [BWEEMS]() professional development workshop, focusing on R statistical programming, taking place on June 16th, 2021 @ 6:30pm EST.
 
-If you plan to participate in this workshop, and have not done so already please download [R](https://cran.r-project.org/mirrors.html) and [Rstudio](https://www.rstudio.com/products/rstudio/). You will need both programs. Since this is an interactive workshop you will get the most out of it if these programs are installed prior to the start of the workshop.
+If you plan to participate in this workshop, and have not done so already please download [R](https://cran.r-project.org/mirrors.html) and [Rstudio](https://www.rstudio.com/products/rstudio/). You will need both programs. Since this is an interactive workshop you will get the most out of it if these programs are installed prior to the start of the workshop. 
 
-If at anytime you lose track of where we are in the workshop please use this [link](https://github.com/latreesedenson/DirtyData-CleanMaps/DataToMaps.html) to follow along.
+If at anytime you lose track of where we are in the workshop please use this [link](https://github.com/latreesedenson/DirtyData-CleanMaps/main/DataToMaps.html) to follow along.
 
 If you have any questions after the workshop feel free to email us: latreese.denson@gmail.com and/or
 acdavis@ualberta.ca. 
