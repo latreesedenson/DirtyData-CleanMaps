@@ -10,4 +10,4 @@ acdavis@ualberta.ca.
 
 After the workshop you can visit the GitHub page for this repository and use the raw Rmarkdown files (.Rmd) as a base to start your own R projects.
 
-[Website Home](https://OfficialBweems.github.io/DirtyData-CleanMaps/)
+[Website Home](https://latreesedenson.github.io/DirtyData-CleanMaps/)
