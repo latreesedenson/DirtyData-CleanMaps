@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="LaTreese Denson &amp; Alex Davis" />
+
+<meta name="date" content="2021-06-16" />
+
+<title>From Messy Data to Clean Maps</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">HOME</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="DataToMaps.html">Workshop Code</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">From Messy Data to Clean Maps</h1>
+<h4 class="author">LaTreese Denson &amp; Alex Davis</h4>
+<h4 class="date">06/16/2021</h4>
+
+</div>
+
+
+<div id="workshop-goal" class="section level2">
+<h2>Workshop Goal:</h2>
+<p>Answer the research question: Does reef size impact species distribution? Provide maps to help readers visualize the results.</p>
+</div>
+<div id="workshop-objectives" class="section level2">
+<h2>Workshop Objectives:</h2>
+<ul>
+<li>Gain a working knowledge of data cleaning steps using the Tidyverse R.</li>
+<li>Perform computations and statistical analyses using various base functions and packages in R.</li>
+<li>Produce publishable content using the ggplot package in R.</li>
+</ul>
+<p><strong>Note:</strong> If you have quick questions about how to use these packages check out the cheat sheets:</p>
+<p><a href="https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf">ggplot2 cheat sheet</a></p>
+<p><a href="https://www.google.com/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=&amp;ved=2ahUKEwjp7svH3pntAhVt0FkKHfR0DxYQFjAAegQIBBAC&amp;url=http%3A%2F%2Fwww.rstudio.com%2Fwp-content%2Fuploads%2F2015%2F02%2Fdata-wrangling-cheatsheet.pdf&amp;usg=AOvVaw2dHobUyR72zhFqfVO45D5A">dplyr cheat sheet</a></p>
+<p>… or <strong>Google it</strong>!</p>
+</div>
+<div id="import-data" class="section level1">
+<h1>Import Data</h1>
+<p>Read in the <a href="https://raw.githubusercontent.com/latreesedenson/SEAinCode/main/growth_data.csv">growth_data</a> from Github using <code>read.csv()</code> and give it the object name “data” using <code>=</code> or <code>-&gt;</code> as the assignment operator:</p>
+<pre class="r"><code>data = read.csv(&quot;https://raw.githubusercontent.com/latreesedenson/SEAinCode/main/growth_data.csv&quot;)
+
+data = as.data.frame(data)</code></pre>
+<p><strong>Note:</strong> You could also copy and paste the data from the web browser into an excel file, change the format to comma delimited, saved it as a csv file and then read it in using <code>read.csv()</code>. This way you would have a copy of the data on your local drive to read from. You would need to replace the weblink with the path to the data on your local computer.</p>
+</div>
+<div id="clean-data" class="section level1">
+<h1>Clean Data</h1>
+<p>Make sure the data was read in correctly using the function <code>head()</code>. And look at parts of the data using the <code>$</code> operator.</p>
+<pre class="r"><code>head(data)</code></pre>
+<pre><code>##   daylength temp_range   growth species
+## 1     short    average 132.9485       A
+## 2   average    average 131.2542       A
+## 3      long    average 125.8153       A
+## 4     short      above 123.1229       A
+## 5   average      above 106.3336       A
+## 6      long      above 100.3005       A</code></pre>
+<pre class="r"><code>data$temp_range</code></pre>
+<pre><code>##   [1] &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;  
+##   [8] &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; NA        &quot;above&quot;   &quot;above&quot;  
+##  [15] &quot;above&quot;   NA        &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot;
+##  [22] &quot;above&quot;   NA        &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot;
+##  [29] &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;  
+##  [36] &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;  
+##  [43] &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;  
+##  [50] &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot;
+##  [57] &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;  
+##  [64] &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;  
+##  [71] &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;  
+##  [78] &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot;
+##  [85] &quot;above&quot;   &quot;above&quot;   NA        &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot;
+##  [92] &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   NA        &quot;below&quot;   &quot;below&quot;  
+##  [99] &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;  
+## [106] &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;  
+## [113] &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot;
+## [120] &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;  
+## [127] &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;  
+## [134] &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;  
+## [141] &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot;
+## [148] &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot;
+## [155] &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;  
+## [162] &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;  
+## [169] &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;  
+## [176] &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot;
+## [183] &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;  
+## [190] &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;  
+## [197] &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;  
+## [204] &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   NA        &quot;average&quot; &quot;average&quot; &quot;average&quot;
+## [211] &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot;
+## [218] &quot;average&quot; NA        &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;  
+## [225] &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;  
+## [232] &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;  
+## [239] &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot;
+## [246] &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;  
+## [253] &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;  
+## [260] &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;  
+## [267] &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;</code></pre>
+<p><strong>ProTip:</strong> Not sure what a function does? Type <code>?head()</code> into the console and see what pops up in the help menu. Scroll down to the bottom–there are often examples of how to use the function that you can practice with.</p>
+<p>What are the column names? Is everything there that should be there?</p>
+<pre class="r"><code>names(data)</code></pre>
+<pre><code>## [1] &quot;daylength&quot;  &quot;temp_range&quot; &quot;growth&quot;     &quot;species&quot;</code></pre>
+<p>What are the dimensions of the dataset, how many rows and columns?</p>
+<pre class="r"><code>dim(data)</code></pre>
+<pre><code>## [1] 270   4</code></pre>
+<p>Let’s get some basic summary statistics from our data: minimums, maximums and means.</p>
+<pre class="r"><code>summary(data)</code></pre>
+<pre><code>##   daylength          temp_range            growth         species         
+##  Length:270         Length:270         Min.   : 64.41   Length:270        
+##  Class :character   Class :character   1st Qu.: 94.48   Class :character  
+##  Mode  :character   Mode  :character   Median :105.66   Mode  :character  
+##                                        Mean   :102.97                     
+##                                        3rd Qu.:111.64                     
+##                                        Max.   :143.50</code></pre>
+<p>You will notice that there were multiple species here and some NAs in the data. Let’s work with the first species and remove the bad records. We will use the pipe operator <code>%&gt;%</code> from the magrittr package within the tidyverse to do this. This syntax leads to code that is easier to write and to read. Use the keyboard shortcut: Ctrl + Shift + M (Windows) or Cmd + Shift + M (Mac) to get the pipe operator.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.0.3</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.2     v purrr   0.3.4
+## v tibble  3.0.3     v dplyr   1.0.2
+## v tidyr   1.1.2     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>Species_A_Clean = data %&gt;% filter(species ==&quot;A&quot;,!is.na(temp_range))
+
+head(Species_A_Clean)</code></pre>
+<pre><code>##   daylength temp_range   growth species
+## 1     short    average 132.9485       A
+## 2   average    average 131.2542       A
+## 3      long    average 125.8153       A
+## 4     short      above 123.1229       A
+## 5   average      above 106.3336       A
+## 6      long      above 100.3005       A</code></pre>
+<pre class="r"><code>dim(Species_A_Clean)</code></pre>
+<pre><code>## [1] 86  4</code></pre>
+<pre class="r"><code>summary(Species_A_Clean)</code></pre>
+<pre><code>##   daylength          temp_range            growth         species         
+##  Length:86          Length:86          Min.   : 99.95   Length:86         
+##  Class :character   Class :character   1st Qu.:106.27   Class :character  
+##  Mode  :character   Mode  :character   Median :111.17   Mode  :character  
+##                                        Mean   :116.64                     
+##                                        3rd Qu.:130.04                     
+##                                        Max.   :143.50</code></pre>
+<p>Notice that there are no more NAs in the temp_range summary.</p>
+<pre class="r"><code>Species_A_Clean$temp_range</code></pre>
+<pre><code>##  [1] &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;  
+##  [8] &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;  
+## [15] &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;  
+## [22] &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;  
+## [29] &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot;
+## [36] &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;  
+## [43] &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;  
+## [50] &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;  
+## [57] &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot;
+## [64] &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;   &quot;below&quot;   &quot;average&quot;
+## [71] &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;above&quot;   &quot;below&quot;   &quot;below&quot;  
+## [78] &quot;below&quot;   &quot;average&quot; &quot;average&quot; &quot;average&quot; &quot;above&quot;   &quot;above&quot;   &quot;below&quot;  
+## [85] &quot;below&quot;   &quot;below&quot;</code></pre>
+</div>
+<div id="basic-visualization-and-analyses" class="section level1">
+<h1>Basic Visualization and Analyses</h1>
+<p>Let’s do a boxplot of our response vs. our explanatory variables. Here we are using the ggplot2 package, but I also provide code for using Base R.</p>
+<p>ggplot can get a bit complex depending on what you want to do but the basic components are typically the same.</p>
+<p>You will notice that I have commented out some lines of code using ‘#’. This allows me to block out lines that I don’t want to run, as well as create comments for a better explanation of my code.</p>
+<pre class="r"><code># ggplot general inputs/arguments (data, aesthetics - x and y) + plot type + etc.
+
+ggplot(Species_A_Clean, aes(x=as.factor(daylength), y=growth)) + 
+  geom_boxplot(fill=&quot;slateblue&quot;, alpha=0.2) +  xlab(&quot;day length&quot;)</code></pre>
+<p><img src="DataToMaps_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code># To save to a file for viewing later we use the function ggsave()
+# The .tiff extension is the type of file, you can also use .jpg
+# .tiff files are good for publication graphics
+# ggsave(&quot;boxplot_daylength.tiff&quot;)
+
+
+# Change the x variable to graph a different explanatory variable
+ggplot(Species_A_Clean, aes(x=as.factor(temp_range), y=growth)) + 
+  geom_boxplot(fill=&quot;slateblue&quot;, alpha=0.2) +  xlab(&quot;temp&quot;)</code></pre>
+<p><img src="DataToMaps_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre class="r"><code># ggsave(&quot;boxplot_temp.tiff&quot;)
+
+# Here is the code to create a boxplot and save it in Base R
+# Remove the # to run these 3 lines
+# tiff(&quot;boxplot.tiff&quot;)
+# boxplot(growth~temp_range,data=Species_A_Clean,xlab=&quot;temp_range&quot;, ylab=&quot;growth(wt&quot;)
+# dev.off() </code></pre>
+<p>Notice the way we save graphics is different depending on the package we are using. Also <code>dev.off()</code> closes all graphics devices so you can start a fresh graph next time.</p>
+<p>Create a histogram of the data using the <code>geom_histogram()</code> function. Change the <code>binwidth</code> to see what happens.</p>
+<pre class="r"><code>ggplot(Species_A_Clean, aes(x = growth)) +
+  geom_histogram(binwidth = 1)</code></pre>
+<p><img src="DataToMaps_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code># You can remove the &#39;#&#39; in the line below if you want to save this
+# ggsave(&quot;DataDistribution.tiff&quot;) 
+
+# Base R
+# hist(Species_A_Clean$growth, breaks=1, col=&quot;darkgrey&quot;, main = &quot;&quot;, xlab=&quot;growth&quot;) </code></pre>
+</div>
+<div id="mapping" class="section level1">
+<h1>Mapping</h1>
+<p>Let’s fit a basic linear model to the data, to determine the impact of day length and temperature on species growth.</p>
+<p>We use the <code>lm()</code> function which needs model and the data as it’s input. The model is setup using a <span class="math inline">\(\sim\)</span>, where <span class="math inline">\(y\sim x\)</span> means that Y is a function of a series of Xs.</p>
+<pre class="r"><code>lm(y ~ x1 + x2 + x3, Data = Data)
+</code></pre>
+<p>Let’s run a model with our species data. We tell R that we have factors with multiple levels by using the function <code>factor()</code>. If you had a continuous variable you wouldn’t need this added piece.</p>
+<pre class="r"><code>SpeciesA.lm = lm(growth ~ factor(daylength)*factor(temp_range), data = Species_A_Clean)</code></pre>
+<p>To get a summary of the linear model output we use the function <code>summary()</code>.</p>
+<pre class="r"><code>sum.mod = summary(SpeciesA.lm) 
+# since sum.mod is an object 
+# we will need to run the next line to see what is in it
+
+sum.mod</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = growth ~ factor(daylength) * factor(temp_range), 
+##     data = Species_A_Clean)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -6.7540 -3.2367 -0.5397  2.6419 12.9402 
+## 
+## Coefficients:
+##                                                  Estimate Std. Error t value
+## (Intercept)                                      109.0499     1.4656  74.405
+## factor(daylength)long                             -2.6890     2.0727  -1.297
+## factor(daylength)short                             1.1328     2.0202   0.561
+## factor(temp_range)average                         26.8020     2.0202  13.267
+## factor(temp_range)below                            0.1362     2.0202   0.067
+## factor(daylength)long:factor(temp_range)average   -3.8093     2.8944  -1.316
+## factor(daylength)short:factor(temp_range)average  -3.4718     2.8192  -1.232
+## factor(daylength)long:factor(temp_range)below     -0.5685     2.8570  -0.199
+## factor(daylength)short:factor(temp_range)below    -1.2432     2.8570  -0.435
+##                                                  Pr(&gt;|t|)    
+## (Intercept)                                        &lt;2e-16 ***
+## factor(daylength)long                               0.198    
+## factor(daylength)short                              0.577    
+## factor(temp_range)average                          &lt;2e-16 ***
+## factor(temp_range)below                             0.946    
+## factor(daylength)long:factor(temp_range)average     0.192    
+## factor(daylength)short:factor(temp_range)average    0.222    
+## factor(daylength)long:factor(temp_range)below       0.843    
+## factor(daylength)short:factor(temp_range)below      0.665    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4.397 on 77 degrees of freedom
+## Multiple R-squared:  0.8904, Adjusted R-squared:  0.879 
+## F-statistic: 78.22 on 8 and 77 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>####
+# Additional functions you may find useful in the future
+####
+# coefficients(fit) # model coefficients
+# confint(fit, level=0.95) # CIs for model parameters
+# fitted(fit) # predicted values
+# residuals(fit) # residuals
+# anova(fit) # anova table 
+####</code></pre>
+<p>Here you have your important outputs to make a conclusion with (pvalues, coefficients, etc.).</p>
+<p>Let’s save some of that information to an excel file. Note: you cannot save the entire output to a csv using the lines below. You will need additional steps and functions.</p>
+<pre class="r"><code># save results to an object
+results = sum.mod$coefficients
+
+# make the object into a dataframe so it is delimited
+# try it without as.data.frame to see what I mean
+out = as.data.frame(results)
+
+# Write to a csv file 
+write.csv(out,&quot;ModelCoefficients.csv&quot;)  
+
+# You can also write to a text file using write.table() and .txt file name instead of csv</code></pre>
+<p>Let’s plot the diagnostics of the model fit to the data.<code>plot(linearmodel)</code> produces 4 main plots; each used to diagnose the fit of the model to the data.</p>
+<pre class="r"><code># Remember you can save this graphic by uncommenting the line below
+# be sure to use dev.off after to reset things
+
+# tiff(&quot;ModelDiagnostics.tiff&quot;)
+# The graphing format: 2 rows 2 columns
+par(mfrow=c(2,2)) 
+
+# type dev.off and run the next line without this function to see what happens
+plot(SpeciesA.lm)</code></pre>
+<p><img src="DataToMaps_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code># close the plotting window and resets things
+dev.off()  </code></pre>
+<pre><code>## null device 
+##           1</code></pre>
+</div>
+<div id="final-protips" class="section level1">
+<h1>Final ProTips</h1>
+<ol style="list-style-type: decimal">
+<li>Comment your code! ( Use the hashtag - # )</li>
+<li>R is case-sensitive. For example, “head()” is not the same as “Head().”</li>
+<li>Be smart when naming files, folders, etc.. You will be looking for them later. Adding the date or sequential numbers to a folder name is helpful.</li>
+<li>Debugging is the hardest part. Copy the error you get and google it. The <a href="https://stackoverflow.com">Stack Overflow</a> community will be your best friend.</li>
+<li>There are a million ways to skin a cat! What I showed you here is only one way of using R to do the things we want to do. Find what works for you.</li>
+</ol>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
