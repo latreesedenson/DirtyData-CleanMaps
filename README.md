@@ -11,4 +11,4 @@ After the workshop you can visit the GitHub page for this repository and use the
 
 [Website Home](https://latreesedenson.github.io/DirtyData-CleanMaps/)
 
-
+[View on Github](https://github.com/latreesedenson/DirtyData-CleanMaps/)
